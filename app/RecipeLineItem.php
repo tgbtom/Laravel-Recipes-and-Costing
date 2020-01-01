@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class RecipeLineItem extends Model
 {
     //
-    protected $fillable = ["recipe_id", "ingredient_id", "quantity", "unit_id", "comment", "subheading"];
+    protected $fillable = ["recipe_id", "ingredient_id", "quantity", "unit_id", "comment"];
 
     public function unit()
     {
