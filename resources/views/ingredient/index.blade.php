@@ -9,7 +9,7 @@
 @endsection
 
 @section('content')
-    <table class="spacious">
+    <table class="spacious table">
         <thead>
             <tr>
                 <th>Ingredient</th>
@@ -33,7 +33,8 @@
                             <td>{{$ingredient->unit->name}}</td>
                         @endif
 
-                        <td><a href="ingredient/{{$ingredient->id}}/edit">Edit</a></td>
+                        <td><a class="btn btn-primary" href="ingredient/{{$ingredient->id}}/edit">Edit</a></td>
+                        <td><a class="btn btn-danger">Delete</a></td>
                     @endif
                 </tr>
             @endforeach

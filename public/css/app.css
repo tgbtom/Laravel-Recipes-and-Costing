@@ -1,11 +1,3 @@
-.container {
-    border: 1px solid black;
-    margin: auto;
-    padding: 2.5% 1%;
-    width: 75%;
-    display: inline-block;
-}
-
 .container2 {
     margin-top: 20px;
 }
@@ -15,14 +7,11 @@
 }
 
 aside {
-    width: 15%;
-    min-width: 85px;
     display: inline-block;
     vertical-align: top;
-    border: 1px solid black;
 }
 
-form input {
+/* form input {
     margin: 5px 2px;
     padding: 2px;
 }
@@ -33,30 +22,22 @@ input[type="number"] {
 
 input[type="text"] {
     width: 120px;
-}
+} */
 
 a:link,
 a:visited,
 a:active,
 a:hover {
-    color: gray;
     text-decoration: none;
-}
-
-.spaciousLite {
-    border-collapse: collapse;
-    width: 100%;
 }
 
 .spaciousLite th,
 .spaciousLite td {
     padding: 8px;
     text-align: left;
-    border-bottom: 1px solid #ddd;
 }
 
 .spacious {
-    border-collapse: collapse;
     width: 100%;
 }
 
