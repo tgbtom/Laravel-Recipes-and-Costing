@@ -15,4 +15,8 @@ class Ingredient extends Model
         return $this->hasOne('App\Unit', 'id', 'unit_id');
     }
 
+    public function user(){
+        return $this->belongsTo('App/User');
+    }
+
 }

@@ -21,25 +21,21 @@
                     <td><a href="recipe/{{$recipe->id}}" target="_blank">{{$recipe->name}}</a></td>
                     <td><a class="btn btn-md btn-primary" href="recipe/{{$recipe->id}}/edit">Edit</a></td>
                     <td>
-                    <a class="btn btn-md btn-secondary" id="myForm" name="{{$recipe->id}}" href="/print/recipecost/{{$recipe->id}}" target="_blank" onclick="askUser(this)">Recipe Costing</a>
+                        <a class="btn btn-md btn-secondary" id="myForm" name="{{$recipe->id}}" href="/print/recipecost/{{$recipe->id}}" target="_blank" onclick="askUser(this)">Recipe Costing</a>
+                    </td>
+                    <td>
+                        {{-- <a class="btn btn-danger" href={{ route('recipe.destroy', $recipe->id) }}>Delete</a> --}}
+                        <form action="{{ route('recipe.destroy', $recipe->id) }}" method="post">
+                            <button class="btn btn-danger" type="submit">Delete</button>
+                            @method("DELETE")
+                            @csrf
+                        </form>
                     </td>
                 </tr>
             @endforeach
         </tbody>
     </table>
-{{-- <div class="row">
-    @foreach ($recipes as $recipe)
 
-        <div class="col-md-4">
-            <div class="card">
-                <a href="recipe/{{$recipe->id}}" target="_blank">{{$recipe->name}}</a>
-                <a class="btn btn-md btn-primary" href="recipe/{{$recipe->id}}/edit">Edit</a>
-                <a class="btn btn-md btn-secondary" id="myForm" name="{{$recipe->id}}" href="/print/recipecost/{{$recipe->id}}" target="_blank" onclick="askUser(this)">Create Recipe Costing Form</a>
-            </div>
-        </div>
-
-    @endforeach
-</div> --}}
     <script>
             function askUser(dom) {
     

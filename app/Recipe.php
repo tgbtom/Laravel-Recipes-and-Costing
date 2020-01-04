@@ -17,4 +17,8 @@ class Recipe extends Model
     public function preparationSteps(){
         return $this->hasMany('App\PreparationStep', 'recipe_id', 'id');
     }
+
+    public function user(){
+        return $this->belongsTo('App\User');
+    }
 }

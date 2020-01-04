@@ -34,7 +34,7 @@
 @section('content')
 
     <div class="costInfo">
-        <table class="printHead">
+        <table class="table table-bordered">
             <thead>
                 <tr>
                     <td colspan=3><b>Recipe:</b> {{$recipe->name}}</td>
@@ -42,7 +42,7 @@
                     <td><b>Date:</b> {{date("M d, Y")}}</td>
                 </tr>
                 <tr>
-                    <td colspan=3><b>Cost Per Portion:</b> $<span id="costPer"></span></td>
+                    <td colspan=3 scope="row"><b>Cost Per Portion:</b> $<span id="costPer"></span></td>
                     <td colspan=2><b>Portions:</b> <span id="portions">{{$recipe->portions * $batches}}</span> x {{$recipe->portion_size}}</td>
                 </tr>
                 <tr>
@@ -54,7 +54,7 @@
             </thead>
         </table>
     </div>
-    <table class="spaciousPrint">
+    <table class="table table-striped table-hover table-bordered">
         <thead>
             <tr>
                 <th colspan=3>Recipe Quantity</th>

@@ -11,31 +11,56 @@
 
 
 @section('content')
-    <form action="/recipe" method="post">
-        <label for="name">Recipe Name</label>
-        <input type="text" name="name" id="name" placeholder="Title" required><br>
-        <input type="hidden" name="part_to_change" value="ingredient">
-        <input type="hidden" name="is_edit" value="false">
 
-        <label for="portions">Portions</label>
-        <input type="number" name="portions" min=0 value=1 required>
-        <input type="text" name="portion_size" placeholder="Describe Portion" required>
-        <br>
-            <select name="ingredient" id="ajaxSubmit" required>
-                @foreach ($ingredients as $ingredient)
-                    <option value="{{$ingredient->id}}">{{$ingredient->name}}</option>
-                @endforeach
-            </select>
-            <input type="number" name="quantity" placeholder="quantity" step="0.01" min=0 required>
-            <select name="unit" readonly>
-                <option id="unit_of_measure" value="{{$default->unit->id}}">{{$default->unit->name}}</option>
-            </select>
-            <input type="text" name="comment" placeholder="Note (e.g Soft)">
-            <br>
-            <input type="submit" value="Begin New Recipe with this ingredient">
-        {{csrf_field()}}
-    </form>   
-    
+<div class="row justify-content-center">
+    <div class="col border pb-3 pt-3">
+        <form action="/recipe" method="post">
+            <div class="form-group">
+                <label for="name">Recipe Name</label>
+                <input class="form-control" type="text" name="name" id="name" placeholder="Title" required><br>
+                <input type="hidden" name="part_to_change" value="ingredient">
+                <input type="hidden" name="is_edit" value="false">
+            </div>
+
+            <div class="form-group">
+                <label for="portions">Portions</label>
+                <div class="input-group">
+                    <input class="form-control" type="number" name="portions" min=0 value=1 required>
+                    <div class="input-group-append">
+                        <input class="form-control" type="text" name="portion_size" placeholder="Describe Portion" required>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="ingredient">First Ingredient:</label>
+
+                <div class="input-group">
+                    <select class="form-control" name="ingredient" id="ajaxSubmit" required>
+                        @foreach ($ingredients as $ingredient)
+                            <option value="{{$ingredient->id}}">{{$ingredient->name}}</option>
+                        @endforeach
+                    </select>
+                    <div class="input-group-append">
+                        <input class="form-control" type="number" name="quantity" placeholder="quantity" step="0.01" min=0 required>
+                        <select class="form-control" name="unit" readonly>
+                            <option id="unit_of_measure" value="{{$default->unit->id}}">{{$default->unit->name}}</option>
+                        </select>
+                    </div>
+                </div>
+                
+            </div>
+                
+            <div class="form-group">
+                <label for="comment">Comment/Text</label>
+                <input class="form-control" type="text" name="comment" placeholder="Note (e.g Soft)">
+            </div>
+
+                <input type="submit" class="btn btn-lg btn-success btn-block" value="Start this Recipe">
+            {{csrf_field()}}
+        </form> 
+    </div>  
+</div>
     
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <script>         

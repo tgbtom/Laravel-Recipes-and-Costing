@@ -3,10 +3,10 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-// use Illuminate\Support\Facades\DB;
 use App\Unit;
 use App\Ingredient;
 use App\Http\Requests\StoreIngredient;
+use Auth;
 
 class IngredientController extends Controller
 {
@@ -18,7 +18,8 @@ class IngredientController extends Controller
     public function index()
     {
         //
-        $ingredients = Ingredient::all();
+        $ingredients = Ingredient::where("user_id", Auth::user()->id)->orWhere("user_id", null)->get();
+
         return view('ingredient.index', compact(["ingredients"]));
     }
 
@@ -49,7 +50,10 @@ class IngredientController extends Controller
             $request->yield_percent = ($request->yield_percent <= 100 && $request->yield_percent >= 0) ? $request->yield_percent : 100; //Ensures the yield value was between 0 and 100
             $yield_percent = $request->yield_percent / 100;
 
-            $ingredient = Ingredient::create(["name"=>$request->name, "cost_per_unit"=>$cost_per_unit, "yield_percent"=>$yield_percent, "unit_id"=>$request->unit_id]);
+            $ingredient = new Ingredient(["name"=>$request->name, "cost_per_unit"=>$cost_per_unit, "yield_percent"=>$yield_percent, "unit_id"=>$request->unit_id]);
+            // $ingredient = Ingredient::create(["name"=>$request->name, "cost_per_unit"=>$cost_per_unit, "yield_percent"=>$yield_percent, "unit_id"=>$request->unit_id]);
+
+            Auth::user()->ingredients()->save($ingredient);
         
 
         return redirect('/ingredient');        
@@ -77,7 +81,11 @@ class IngredientController extends Controller
         //
         $ingredient = Ingredient::findOrFail($id);
         $units = Unit::all();
-        return view('ingredient.edit', compact(["ingredient", "units"]));
+        if(Auth::user()->ingredients->find($id)){
+            return view('ingredient.edit', compact(["ingredient", "units"]));
+        }
+        return redirect()->route('ingredient.index');
+        
     }
 
     /**
@@ -90,17 +98,19 @@ class IngredientController extends Controller
     public function update(Request $request, $id)
     {
         //
-        $cost_per_unit = max(round($request->cost_per_unit / $request->unit_amount, 6), 0.0001); //Cost must be 0.1cent per unit of measure or higher
-        $request->yield_percent = ($request->yield_percent <= 100 && $request->yield_percent >= 0) ? $request->yield_percent : 100; //Ensures the yield value was between 0 and 100
-        $yield_percent = $request->yield_percent / 100;
-        $ingredient = Ingredient::findOrFail($id);
-        $ingredient->name = $request->name;
-        $ingredient->cost_per_unit = $cost_per_unit;
-        $ingredient->yield_percent = $yield_percent;
-        $ingredient->unit_id = $request->unit_id;
-        
-        $ingredient->save();
+        if($ingredient = Auth::user()->ingredients->find($id)){
+            $cost_per_unit = max(round($request->cost_per_unit / $request->unit_amount, 6), 0.0001); //Cost must be 0.1cent per unit of measure or higher
+            $request->yield_percent = ($request->yield_percent <= 100 && $request->yield_percent >= 0) ? $request->yield_percent : 100; //Ensures the yield value was between 0 and 100
+            $yield_percent = $request->yield_percent / 100;
+            // $ingredient = Ingredient::findOrFail($id);
+            $ingredient->name = $request->name;
+            $ingredient->cost_per_unit = $cost_per_unit;
+            $ingredient->yield_percent = $yield_percent;
+            $ingredient->unit_id = $request->unit_id;
 
+            $ingredient->save();
+        }
+        
         return redirect('/ingredient');    
     }
 
@@ -112,6 +122,11 @@ class IngredientController extends Controller
      */
     public function destroy($id)
     {
-        //
+        //Ensure ingredient belongs to current user
+        if($ingredient = Auth::user()->ingredients->find($id)){
+            $$ingredient->delete();
+            return redirect()->route('ingredient.index');
+        }
+        return redirect()->route('ingredient.index');
     }
 }

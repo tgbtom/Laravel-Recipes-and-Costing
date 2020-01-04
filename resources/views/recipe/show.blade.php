@@ -29,7 +29,7 @@
 @section('content')
     <h2 class="centerText">{{$recipe->name}}</h2>
 
-    <table class="spacious">
+    <table class="table table-hover table-striped table-bordered">
         <thead>
             <tr>
                 <th>Ingredient</th>
@@ -92,7 +92,7 @@
 
     <hr>
     <h3 class="centerText"><u>Preparation Steps</u></h3>
-    <table class="spacious">
+    <table class="table table-hover table-striped">
         <thead>
             <tr>
                 <th>Step #</th>

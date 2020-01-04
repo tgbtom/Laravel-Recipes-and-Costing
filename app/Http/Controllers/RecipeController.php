@@ -8,6 +8,7 @@ use App\Ingredient;
 use App\RecipeLineItem;
 use App\Unit;
 use App\PreparationStep;
+use Auth;
 
 class RecipeController extends Controller
 {
@@ -19,8 +20,12 @@ class RecipeController extends Controller
     public function index()
     {
         //
-        $recipes = Recipe::orderBy("name", "asc")->get();
-        return view('recipe.index', compact(["recipes"]));
+        if(Auth::check()){
+            $user = Auth::user();
+            $recipes = $user->recipes()->orderBy("name", "asc")->get();
+            return view('recipe.index', compact(["recipes"]));
+        }
+        return redirect()->route('home');
     }
 
     public function changeUnit(Request $request){
@@ -38,7 +43,7 @@ class RecipeController extends Controller
     public function create()
     {
         //
-        $ingredients = Ingredient::all();
+        $ingredients = Ingredient::where("user_id", Auth::user()->id)->orWhere("user_id", null)->get();
         $default = Ingredient::first();
         return view('recipe.create', compact(["ingredients", "default"]));
     }
@@ -78,12 +83,16 @@ class RecipeController extends Controller
                 }
             }
 
-            if(!Recipe::whereName($request->name)->first()){
-                $recipe = Recipe::create(["user_id"=>1,
-                "name"=>$request->name,
-                "portions"=>$request->portions,
-                "portion_size"=>$request->portion_size,
-                "is_draft"=>false]);
+            if(Recipe::where(["user_id", "=", Auth::user()->id])->where(["name", "=", $request->name])){
+
+                $recipe = new Recipe([
+                    "name"=>$request->name,
+                    "portions"=>$request->portions,
+                    "portion_size"=>$request->portion_size,
+                    "is_draft"=>false
+                ]);
+
+                Auth::user()->recipes()->save($recipe);
 
                 //create the entered Line item
                 $newLine = new RecipeLineItem();
@@ -92,23 +101,30 @@ class RecipeController extends Controller
                 $newLine->unit_id = $request->unit;
                 $newLine->comment = $request->comment;
                 $recipe->recipeLineItems()->save($newLine);
-                $recipe = Recipe::where("name", $request->name)->first();
+                // $recipe = Recipe::where("name", $request->name)->first();
             }
+
+            // if(!Recipe::whereName($request->name)->first()){
+                
+            // }
             elseif($request->is_edit == true){ //Recipe already exists, view that recipe and add the line
-                $newLine = new RecipeLineItem();
-                $newLine->ingredient_id = $request->ingredient;
-                $newLine->quantity = $request->quantity;
-                $newLine->unit_id = $request->unit;
-                $newLine->comment = $request->comment;
                 $recipe = Recipe::where("name", $request->name)->first();
-                $recipe->recipeLineItems()->save($newLine);
+                if($recipe->user->id == Auth::user()->id){
+                    $newLine = new RecipeLineItem();
+                    $newLine->ingredient_id = $request->ingredient;
+                    $newLine->quantity = $request->quantity;
+                    $newLine->unit_id = $request->unit;
+                    $newLine->comment = $request->comment;
+                    $recipe->recipeLineItems()->save($newLine);
+                }
             }
             else{
                 $recipe = Recipe::where("name", $request->name)->first();
             }
         }
         elseif ($request->part_to_change == "preparation" && $request->is_edit == true){
-            $recipe = Recipe::where("name", $request->name)->first();
+            $recipe = Auth::user()->recipes->where("name", $request->name)->first();
+            // $recipe = Recipe::where("name", $request->name)->first();
 
             //re-order steps so none of them overlap
             $currentSteps = $recipe->preparationSteps;
@@ -139,9 +155,12 @@ class RecipeController extends Controller
     {
         //
         $recipe = Recipe::findOrFail($id);
-        $line_items = $recipe->recipeLineItems;
-        $prep_steps = $recipe->preparationSteps;
-        return view("recipe.show", compact(["recipe", "line_items", "prep_steps"]));
+        if($recipe->user->id == Auth::user()->id){
+            $line_items = $recipe->recipeLineItems;
+            $prep_steps = $recipe->preparationSteps;
+            return view("recipe.show", compact(["recipe", "line_items", "prep_steps"]));
+        }
+        return redirect()->route('home');
     }
 
     /**
@@ -150,17 +169,21 @@ class RecipeController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($recipe)
+    public function edit($recipeId)
     {
         //
-        $ingredients = Ingredient::all();
-        $default = Ingredient::first();
-        $recipe = Recipe::findOrFail($recipe);
+        $ingredients = Ingredient::where("user_id", Auth::user()->id)->orWhere("user_id", null)->orderBy('name', 'asc')->get();
+        $default = Ingredient::find(1);
+        $recipe = Recipe::findOrFail($recipeId);
+        $recipe = Recipe::whereId($recipeId)->first();
         $preparation_steps = $recipe->preparationSteps()->orderBy("order", 'asc')->get();
 
         $lineItems = $recipe->recipeLineItems;
 
-        return view('recipe.edit', compact(["ingredients", "default", "recipe", "lineItems", "preparation_steps"]));
+        if($recipe->user->id == Auth::user()->id){
+            return view('recipe.edit', compact(["ingredients", "default", "recipe", "lineItems", "preparation_steps"]));
+        }
+        return redirect()->route('home');
     }
 
     /**
@@ -183,7 +206,11 @@ class RecipeController extends Controller
      */
     public function destroy($id)
     {
-        //
-        echo "Delete";
+        //Ensure recipe belongs to current user
+        if($recipe = Auth::user()->recipes->find($id)){
+            $recipe->delete();
+            return redirect()->route('home');
+        }
+        return "Recipe could not be deleted";
     }
 }

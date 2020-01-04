@@ -9,12 +9,14 @@
 @endsection
 
 @section('content')
+<div class="row">
+<div class="col-md-12">
     <table class="spacious table">
         <thead>
             <tr>
-                <th>Ingredient</th>
-                <th>Cost Per</th>
-                <th colspan=2>Unit</th>
+                <th colspan=2>Ingredient</th>
+                <th>Cost Per Unit</th>
+                <th colspan=2></th>
             </tr>
         </thead>
         <tbody>
@@ -34,10 +36,19 @@
                         @endif
 
                         <td><a class="btn btn-primary" href="ingredient/{{$ingredient->id}}/edit">Edit</a></td>
-                        <td><a class="btn btn-danger">Delete</a></td>
+                        <td>
+                            <form action="{{ route('ingredient.destroy', $ingredient->id) }}" method="post">
+                                <button class="btn btn-danger" type="submit">Delete</button>
+                                @method("DELETE")
+                                @csrf
+                            </form>
+                        </td>
                     @endif
                 </tr>
             @endforeach
         </tbody>
     </table>
+</div>
+</div>
+    
 @endsection

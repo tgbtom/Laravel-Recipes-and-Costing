@@ -10,45 +10,60 @@
 
 @section('content')
 
-{{-- <form action="/line/{{$lineItem->id}}" method="post">
-    <input type="hidden" name="line_id" value={{$lineItem->id}}>
-    <input type="hidden" name="recipe_id" value={{$recipe->id}}>
-    @method('DELETE')
-    {{csrf_field()}}
-    <input type="submit" value="Delete">
-</form> --}}
-
-
     <form action="/ingredient/{{$ingredient->id}}" method="post">
-        <label for="name">Ingredient</label>
-        <input type="text" name="name" value="{{$ingredient->name}}" readonly>
-        <label for="yield_percent">Yield</label>
-        <input type="number" name="yield_percent" min=0 max=100 value={{$ingredient->yield_percent * 100}}>%<br>
-        <label for="cost_per_unit">$</label>
+        <div class="form-group">
+            <label for="name">Ingredient</label>
+            <input class="form-control" type="text" name="name" value="{{$ingredient->name}}" readonly>
+        </div>
 
-        @if ($ingredient->unit->name == "g")
-            <input type="number" name="cost_per_unit" step="0.01"  placeholder="Cost" value={{number_format($ingredient->cost_per_unit * 100, 2)}} required>
-            <label for="unit_amount">Per</label>
-            <input type="number" name="unit_amount" placeholder="Qty" value="100" required>
-        @else
-            <input type="number" name="cost_per_unit" step="0.01"  placeholder="Cost" value={{$ingredient->cost_per_unit}} required>
-            <label for="unit_amount">Per</label>
-            <input type="number" name="unit_amount" placeholder="Qty" value="1" required>
-        @endif
+        <div class="form-group">
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">Yield</span>
+                </div>
+                <input class="form-control" type="number" name="yield_percent" min=0 max=100 value={{$ingredient->yield_percent * 100}}>
+                <div class="input-group-append">
+                    <span class="input-group-text">%</span>
+                </div>
+            </div>
+        </div>
 
+        <div class="form-group">
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">$</span>
+                </div>
 
-        <select name="unit_id" required>
-            <option value={{$ingredient->unit_id}}>{{$ingredient->unit->name}}</option>
-            @foreach ($units as $unit)
-                @if ($unit->id != $ingredient->unit_id)
-                    <option value={{$unit->id}}>{{$unit->name}}</option>
+                @if ($ingredient->unit->name == "g")
+                    <input class="form-control" type="number" name="cost_per_unit" step="0.01"  placeholder="Cost" value={{number_format($ingredient->cost_per_unit * 100, 2)}} required>
+                    <div class="input-group-append">
+                        <span class="input-group-text">Per</span>
+                    </div>
+                    <input class="form-control" type="number" name="unit_amount" placeholder="Qty" value="100" required>
+                @else
+                    <input class="form-control" type="number" name="cost_per_unit" step="0.01"  placeholder="Cost" value={{$ingredient->cost_per_unit}} required>
+                    <div class="input-group-append">
+                        <span class="input-group-text">Per</span>
+                    </div>
+                    <input class="form-control" type="number" name="unit_amount" placeholder="Qty" value="1" required>
                 @endif
-            @endforeach
-        </select><br>
+
+                <div class="input-group-append">
+                    <select class="form-control" name="unit_id" required>
+                        <option value={{$ingredient->unit_id}}>{{$ingredient->unit->name}}</option>
+                        @foreach ($units as $unit)
+                            @if ($unit->id != $ingredient->unit_id)
+                                <option value={{$unit->id}}>{{$unit->name}}</option>
+                            @endif
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+        </div>
 
         @method('PUT')
         {{csrf_field()}}
 
-        <input type="submit" value="Update Ingredient">
+        <input class="btn btn-lg btn-block btn-success" type="submit" value="Update Ingredient">
     </form>    
 @endsection
