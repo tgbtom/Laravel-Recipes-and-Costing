@@ -43,7 +43,7 @@ class RecipeController extends Controller
     public function create()
     {
         //
-        $ingredients = Ingredient::where("user_id", Auth::user()->id)->orWhere("user_id", null)->get();
+        $ingredients = Ingredient::where("user_id", Auth::user()->id)->orWhere("user_id", null)->orderBy('name')->get();
         $default = Ingredient::first();
         return view('recipe.create', compact(["ingredients", "default"]));
     }
@@ -103,10 +103,6 @@ class RecipeController extends Controller
                 $recipe->recipeLineItems()->save($newLine);
                 // $recipe = Recipe::where("name", $request->name)->first();
             }
-
-            // if(!Recipe::whereName($request->name)->first()){
-                
-            // }
             elseif($request->is_edit == true){ //Recipe already exists, view that recipe and add the line
                 $recipe = Recipe::where("name", $request->name)->first();
                 if($recipe->user->id == Auth::user()->id){
@@ -123,7 +119,7 @@ class RecipeController extends Controller
             }
         }
         elseif ($request->part_to_change == "preparation" && $request->is_edit == true){
-            $recipe = Auth::user()->recipes->where("name", $request->name)->first();
+            $recipe = Auth::user()->recipes->where("name", $request->prep_name)->first();
             // $recipe = Recipe::where("name", $request->name)->first();
 
             //re-order steps so none of them overlap

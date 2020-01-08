@@ -46,7 +46,7 @@ class IngredientController extends Controller
         //Add if the ingredient name is not already in use
 
         // Ingredient::where("name", $request->name);
-            $cost_per_unit = max(round($request->cost_per_unit / $request->unit_amount, 6), 0.0001); //Cost must be 0.1cent per unit of measure or higher
+            $cost_per_unit = $request->free ? 0 : max(round($request->cost_per_unit / $request->unit_amount, 6), 0.0001); //Cost must be 0.1cent per unit of measure or higher IF it is not free
             $request->yield_percent = ($request->yield_percent <= 100 && $request->yield_percent >= 0) ? $request->yield_percent : 100; //Ensures the yield value was between 0 and 100
             $yield_percent = $request->yield_percent / 100;
 
@@ -124,7 +124,7 @@ class IngredientController extends Controller
     {
         //Ensure ingredient belongs to current user
         if($ingredient = Auth::user()->ingredients->find($id)){
-            $$ingredient->delete();
+            $ingredient->delete();
             return redirect()->route('ingredient.index');
         }
         return redirect()->route('ingredient.index');

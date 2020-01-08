@@ -43,6 +43,12 @@
                 </div>
             </div>
         </div>
+        <div class="form-group">
+            <div class="form-check">
+                <input type="checkbox" class="form-check-input" name="free" id="free">
+                <label for="free" class="form-check-label">Free Ingredient</label>
+            </div>
+        </div>
   
         <input type="submit" class="btn btn-lg btn-block btn-success" value="Create Ingredient">
         {{csrf_field()}}

@@ -36,13 +36,15 @@
                 <label for="ingredient">First Ingredient:</label>
 
                 <div class="input-group">
-                    <select class="form-control" name="ingredient" id="ajaxSubmit" required>
-                        @foreach ($ingredients as $ingredient)
-                            <option value="{{$ingredient->id}}">{{$ingredient->name}}</option>
-                        @endforeach
-                    </select>
+                    <div class="input-group-prepend">
+                        <select class="form-control" name="ingredient" id="ajaxSubmit" required>
+                            @foreach ($ingredients as $ingredient)
+                                <option value="{{$ingredient->id}}">{{$ingredient->name}}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <input class="form-control" type="number" name="quantity" placeholder="quantity" step="0.01" min=0 required>
                     <div class="input-group-append">
-                        <input class="form-control" type="number" name="quantity" placeholder="quantity" step="0.01" min=0 required>
                         <select class="form-control" name="unit" readonly>
                             <option id="unit_of_measure" value="{{$default->unit->id}}">{{$default->unit->name}}</option>
                         </select>

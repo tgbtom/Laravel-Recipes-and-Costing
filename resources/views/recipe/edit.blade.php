@@ -172,7 +172,7 @@
 
 <h3 class="centerText"><u>Preparation Steps</u></h3>
     <form action="/recipe" method="post" class="centerText">
-        <input type="hidden" name="name" id="name" value="{{$recipe->name}}">
+        <input type="hidden" name="prep_name" id="prep_name" value="{{$recipe->name}}">
         <input type="hidden" name="part_to_change" value="preparation">
         <input type="text" name="is_edit" value="true" hidden>
 
@@ -218,6 +218,8 @@
                             <input type="hidden" name="recipe_id" value={{$recipe->id}}>
                             <textarea name="newDescription" class="form-control form-control-lg" cols="100" rows="2">{{$step->description}}</textarea>
                     </td>
+                </tr>
+                <tr>
                     <td>
                         <input type="submit" class="btn btn-success" value="Save Changes">{{csrf_field()}}</form>
                     </td>
