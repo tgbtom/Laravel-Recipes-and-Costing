@@ -83,7 +83,7 @@ class RecipeController extends Controller
                 }
             }
 
-            if(Recipe::where(["user_id", "=", Auth::user()->id])->where(["name", "=", $request->name])){
+            if(!Recipe::where("user_id", "=", Auth::user()->id)->where("name", "=", $request->name)->get()->count()){
 
                 $recipe = new Recipe([
                     "name"=>$request->name,
@@ -101,10 +101,10 @@ class RecipeController extends Controller
                 $newLine->unit_id = $request->unit;
                 $newLine->comment = $request->comment;
                 $recipe->recipeLineItems()->save($newLine);
-                // $recipe = Recipe::where("name", $request->name)->first();
             }
             elseif($request->is_edit == true){ //Recipe already exists, view that recipe and add the line
-                $recipe = Recipe::where("name", $request->name)->first();
+                $recipe = Auth::user()->recipes->where("name", $request->name)->first();
+
                 if($recipe->user->id == Auth::user()->id){
                     $newLine = new RecipeLineItem();
                     $newLine->ingredient_id = $request->ingredient;
