@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Recipe extends Model
 {
     //
-    protected $fillable = ["user_id", "name", "portions", "portion_size", "is_draft"];
+    protected $fillable = ["user_id", "name", "portions", "portion_size", "is_draft", "recipe_image"];
 
     public function recipeLineItems()
     {
@@ -20,5 +20,9 @@ class Recipe extends Model
 
     public function user(){
         return $this->belongsTo('App\User');
+    }
+
+    public function getImageAttribute(){
+        return $this->recipe_image;
     }
 }

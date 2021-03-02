@@ -28,6 +28,11 @@
 
 @section('content')
     <h2 class="centerText">{{$recipe->name}}</h2>
+    @if ($recipe->recipe_image)
+        <img src="{{ asset($recipe->recipe_image) }}" style="max-width: 400px; max-height: 400px; border-radius: 5%; display: block;
+        margin-left: auto;
+        margin-right: auto;">
+    @endif
 
     <table class="table table-hover table-striped table-bordered">
         <thead>

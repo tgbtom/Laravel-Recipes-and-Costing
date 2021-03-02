@@ -14,7 +14,7 @@
 
 <div class="row justify-content-center">
     <div class="col border pb-3 pt-3">
-        <form action="/recipe" method="post">
+        <form action="/recipe" method="post" enctype="multipart/form-data">
             <div class="form-group">
                 <label for="name">Recipe Name</label>
                 <input class="form-control" type="text" name="name" id="name" placeholder="Title" required><br>
@@ -56,6 +56,11 @@
             <div class="form-group">
                 <label for="comment">Comment/Text</label>
                 <input class="form-control" type="text" name="comment" placeholder="Note (e.g Soft)">
+            </div>
+
+            <div class="form-group">
+                <label for="comment">Recipe Image</label>
+                <input class="form-control" type="file" name="recipe_image" accept="image/*">
             </div>
 
                 <input type="submit" class="btn btn-lg btn-success btn-block" value="Start this Recipe">
