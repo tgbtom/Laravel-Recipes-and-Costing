@@ -41,6 +41,7 @@
 
     <form action="/recipe" method="post" class="centerText">
             <input type="hidden" name="part_to_change" value="ingredient">
+            <input type="hidden" name="prep_name" id="prep_name" value="{{$recipe->name}}">
             <input type="text" name="is_edit" value="true" hidden>
 
             <div class="form-group">
@@ -185,7 +186,16 @@
                     </td>
                 @else
                 </tr><td colspan=4></td><tr>
-                <th colspan=4>{{$lineItem->comment}}</th>
+                <th colspan=3>{{$lineItem->comment}}</th>
+                <td>
+                    <form action="/line/{{$lineItem->id}}" method="post">
+                        <input type="hidden" name="line_id" value={{$lineItem->id}}>
+                        <input type="hidden" name="recipe_id" value={{$recipe->id}}>
+                        @method('DELETE')
+                        {{csrf_field()}}
+                        <input type="submit" class="btn btn-danger" value="Delete">
+                    </form>
+                </td>
                 @endif
 
             </tr>
