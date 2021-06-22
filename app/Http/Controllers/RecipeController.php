@@ -89,7 +89,7 @@ class RecipeController extends Controller
                 }
             }
 
-            if(!Recipe::where("user_id", "=", Auth::user()->id)->where("name", "=", $request->name)->get()->count() && $request->is_edit != true){
+            if(Recipe::where("user_id", "=", Auth::user()->id)->where("name", "=", $request->name)->get()->count() == 0 && $request->is_edit == 'false'){
 
                 $recipe = new Recipe([
                     "name"=>$request->name,
@@ -123,7 +123,7 @@ class RecipeController extends Controller
                 $newLine->comment = $request->comment;
                 $recipe->recipeLineItems()->save($newLine);
             }
-            elseif($request->is_edit == true){ //Recipe already exists, view that recipe and add the line
+            elseif($request->is_edit == 'true'){ //Recipe already exists, view that recipe and add the line
                 $recipe = Auth::user()->recipes->where("name", $request->prep_name)->first();
 
                 if($recipe->user->id == Auth::user()->id){
@@ -139,7 +139,7 @@ class RecipeController extends Controller
                 $recipe = Recipe::where("name", $request->prep_name)->first();
             }
         }
-        elseif ($request->part_to_change == "preparation" && $request->is_edit == true){
+        elseif ($request->part_to_change == "preparation" && $request->is_edit == 'true'){
             $recipe = Auth::user()->recipes->where("name", $request->prep_name)->first();
             // $recipe = Recipe::where("name", $request->name)->first();
 
@@ -156,7 +156,7 @@ class RecipeController extends Controller
             $newStep->order = $request->order;
             $newStep->description = $request->description;
             $recipe->preparationSteps()->save($newStep);
-        } elseif($request->part_to_change == "master" && $request->is_edit == true){
+        } elseif($request->part_to_change == "master" && $request->is_edit == 'true'){
             $recipe = Auth::user()->recipes->where("name", $request->prep_name)->first();
             $recipe->name = $request->new_name;
             $recipe->portions = $request->portions;
