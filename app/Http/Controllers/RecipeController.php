@@ -3,15 +3,21 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
+
 use App\Recipe;
 use App\Ingredient;
 use App\RecipeLineItem;
 use App\Unit;
 use App\PreparationStep;
 use Auth;
+use App\Traits\UploadTrait;
 
 class RecipeController extends Controller
 {
+
+    use UploadTrait;
+
     /**
      * Display a listing of the resource.
      *
@@ -83,7 +89,7 @@ class RecipeController extends Controller
                 }
             }
 
-            if(Recipe::where(["user_id", "=", Auth::user()->id])->where(["name", "=", $request->name])){
+            if(Recipe::where("user_id", "=", Auth::user()->id)->where("name", "=", $request->name)->get()->count() == 0 && $request->is_edit == 'false'){
 
                 $recipe = new Recipe([
                     "name"=>$request->name,
@@ -91,6 +97,21 @@ class RecipeController extends Controller
                     "portion_size"=>$request->portion_size,
                     "is_draft"=>false
                 ]);
+
+                if ($request->has('recipe_image')) {
+                    // Get image file
+                    $image = $request->file('recipe_image');
+                    // Make a image name based on user name and current timestamp
+                    $name = Str::slug($request->input('name')).'_'.time();
+                    // Define folder path
+                    $folder = '/uploads/images/';
+                    // Make a file path where image will be stored [ folder path + file name + file extension]
+                    $filePath = $folder . $name. '.' . $image->getClientOriginalExtension();
+                    // Upload image
+                    $this->uploadOne($image, $folder, 'public', $name);
+                    // Set user profile image path in database to filePath
+                    $recipe->recipe_image = $filePath;
+                }
 
                 Auth::user()->recipes()->save($recipe);
 
@@ -101,10 +122,10 @@ class RecipeController extends Controller
                 $newLine->unit_id = $request->unit;
                 $newLine->comment = $request->comment;
                 $recipe->recipeLineItems()->save($newLine);
-                // $recipe = Recipe::where("name", $request->name)->first();
             }
-            elseif($request->is_edit == true){ //Recipe already exists, view that recipe and add the line
-                $recipe = Recipe::where("name", $request->name)->first();
+            elseif($request->is_edit == 'true'){ //Recipe already exists, view that recipe and add the line
+                $recipe = Auth::user()->recipes->where("name", $request->prep_name)->first();
+
                 if($recipe->user->id == Auth::user()->id){
                     $newLine = new RecipeLineItem();
                     $newLine->ingredient_id = $request->ingredient;
@@ -115,10 +136,10 @@ class RecipeController extends Controller
                 }
             }
             else{
-                $recipe = Recipe::where("name", $request->name)->first();
+                $recipe = Recipe::where("name", $request->prep_name)->first();
             }
         }
-        elseif ($request->part_to_change == "preparation" && $request->is_edit == true){
+        elseif ($request->part_to_change == "preparation" && $request->is_edit == 'true'){
             $recipe = Auth::user()->recipes->where("name", $request->prep_name)->first();
             // $recipe = Recipe::where("name", $request->name)->first();
 
@@ -135,6 +156,28 @@ class RecipeController extends Controller
             $newStep->order = $request->order;
             $newStep->description = $request->description;
             $recipe->preparationSteps()->save($newStep);
+        } elseif($request->part_to_change == "master" && $request->is_edit == 'true'){
+            $recipe = Auth::user()->recipes->where("name", $request->prep_name)->first();
+            $recipe->name = $request->new_name;
+            $recipe->portions = $request->portions;
+            $recipe->portion_size = $request->portion_size;
+
+            if ($request->has('recipe_image')) {
+                // Get image file
+                $image = $request->file('recipe_image');
+                // Make a image name based on user name and current timestamp
+                $name = Str::slug($request->input('name')).'_'.time();
+                // Define folder path
+                $folder = '/uploads/images/';
+                // Make a file path where image will be stored [ folder path + file name + file extension]
+                $filePath = $folder . $name. '.' . $image->getClientOriginalExtension();
+                // Upload image
+                $this->uploadOne($image, $folder, 'public', $name);
+                // Set user profile image path in database to filePath
+                $recipe->recipe_image = $filePath;
+            }
+
+            $recipe->save();
         }
         
         

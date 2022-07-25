@@ -14,9 +14,34 @@
 
     <h2 class="centerText">{{$recipe->name}}</h2>
 
+    <form action="/recipe" method="post" class="centerText" enctype="multipart/form-data">
+        <input type="hidden" name="prep_name" id="prep_name" value="{{$recipe->name}}">
+        <input type="hidden" name="part_to_change" value="master">
+        <input type="text" name="is_edit" value="true" hidden>
+        <details>
+            Title: <input class="mt-3" type="text" name="new_name" value="{{$recipe->name}}">
+            Portions: <input type="number" name="portions" value="{{$recipe->portions}}"> 
+            Size: <input type="text" name="portion_size" value="{{$recipe->portion_size}}"> 
+
+            @if ($recipe->recipe_image)
+                <img src="{{ asset($recipe->recipe_image) }}" style="max-width: 40px; max-height: 40px; border-radius: 25%; display: block; margin-left: auto; margin-right: auto;">
+            @endif
+
+            <div class="form-group">
+                <label for="comment">Update Recipe Image</label>
+                <input class="form-control" type="file" name="recipe_image" accept="image/*" value="update">
+            </div>
+
+            <summary>Master Details</summary>
+            <input type="submit" class="btn btn-block btn-primary mt-3 mb-3" value="Save Changes">
+        </details><br>
+        {{@csrf_field()}}
+    </form>
+
+
     <form action="/recipe" method="post" class="centerText">
-            <input type="hidden" name="name" id="name" value="{{$recipe->name}}"><br>
             <input type="hidden" name="part_to_change" value="ingredient">
+            <input type="hidden" name="prep_name" id="prep_name" value="{{$recipe->name}}">
             <input type="text" name="is_edit" value="true" hidden>
 
             <div class="form-group">
@@ -161,7 +186,16 @@
                     </td>
                 @else
                 </tr><td colspan=4></td><tr>
-                <th colspan=4>{{$lineItem->comment}}</th>
+                <th colspan=3>{{$lineItem->comment}}</th>
+                <td>
+                    <form action="/line/{{$lineItem->id}}" method="post">
+                        <input type="hidden" name="line_id" value={{$lineItem->id}}>
+                        <input type="hidden" name="recipe_id" value={{$recipe->id}}>
+                        @method('DELETE')
+                        {{csrf_field()}}
+                        <input type="submit" class="btn btn-danger" value="Delete">
+                    </form>
+                </td>
                 @endif
 
             </tr>
